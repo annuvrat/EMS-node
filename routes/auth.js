@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 const Employee = require('../models/Employee');
 const router = express.Router();
 
-const JWT_SECRET = "your_jwt_secret"; // Replace with a secure secret
+const JWT_SECRET = "your_jwt_secret"; 
 
-// Login Route
 router.get('/',async(req,res)=>{
 res.send('hiiiii')
 });
@@ -28,7 +27,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Change Password
+
 router.post('/change-password', async (req, res) => {
   const { employeeCode, oldPassword, newPassword } = req.body;
 
@@ -49,7 +48,7 @@ router.post('/change-password', async (req, res) => {
   }
 });
 
-// Reset Password
+
 router.post('/reset-password', async (req, res) => {
   const { employeeCode, newPassword } = req.body;
 
@@ -66,7 +65,7 @@ router.post('/reset-password', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
-// Register New Employee
+
 router.post('/register', async (req, res) => {
   const { employeeCode, password } = req.body;
 
