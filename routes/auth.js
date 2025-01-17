@@ -11,21 +11,31 @@ res.send('hiiiii')
 });
 
 router.post('/login', async (req, res) => {
-  const { employeeCode, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const employee = await Employee.findOne({ employeeCode });
+   
+    const employee = await Employee.findOne({ email });
     if (!employee) return res.status(404).json({ message: 'Employee not found' });
 
+    
     const validPassword = await bcrypt.compare(password, employee.password);
     if (!validPassword) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ employeeCode: employee.employeeCode }, JWT_SECRET, { expiresIn: '1h' });
+   
+    const token = jwt.sign(
+      { name: employee.name, role: employee.role },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+  
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
+
 
 
 router.post('/change-password', async (req, res) => {
@@ -67,18 +77,25 @@ router.post('/reset-password', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const { employeeCode, password } = req.body;
+  const {  password, name, email, birthdate, role, address, phoneNumber, department } = req.body;
 
   try {
     
-    const existingEmployee = await Employee.findOne({ employeeCode });
+    const existingEmployee = await Employee.findOne({ name });
     if (existingEmployee) {
       return res.status(400).json({ message: 'Employee already exists' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newEmployee = new Employee({
-      employeeCode,
+    
+      name,
+      email,
       password: hashedPassword,
+      birthdate,
+      role,
+      address,
+      phoneNumber,
+      department,
     });
 
     await newEmployee.save();
@@ -87,5 +104,6 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
+
 
 module.exports = router;
